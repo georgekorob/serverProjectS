@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  db:
+    build: postgres
+    container_name: postgres
+    ports:
+      - 5432:5432
+    privileged: true
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - backend/.env.prod.db
+    restart: always
+
+  broadcast:
+    build: broadcast
+    container_name: broadcast
+    command: bash -c "python wolan.py 0.0.0.0 25566"
+    network_mode: host
+    restart: always
+
+  backend:
+    build: backend
+    container_name: backend
+    expose:
+      - 8080
+    command: bash -c "
+      python manage.py fill_db &&
+      gunicorn homeserver.wsgi -b 0.0.0.0:8080
+      "
+    depends_on:
+      - db
+    volumes:
+     - static_volume:/static
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+    volumes:
+     - static_volume:/static
+    restart: always
+
+volumes:
+  static_volume:

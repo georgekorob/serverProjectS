@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block local_css %}
+    <link href="{% static 'css/auth-admin.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        {% block content_admin %}
+        {% endblock %}
+    </div>
+{% endblock %}
+{% block local_js %}
+    <script src="{% static 'js/auth-admin.js' %}"></script>
+{% endblock %}

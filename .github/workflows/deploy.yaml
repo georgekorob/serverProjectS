@@ -1,0 +1,24 @@
+name: HomeServerDRFReactApp
+on:
+  push:
+    branches: master
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.SSH_HOST}}
+          port: ${{secrets.PORT}}
+          user: ${{secrets.SSH_USER}}
+          private_key: ${{secrets.SSH_PRIVATE_KEY}}
+          command: |
+            cd ${{ secrets.PROJECT_FOLDER }};
+            git checkout master;
+            git fetch --all;
+            git reset --hard origin/master;
+            docker-compose up --build -d;
